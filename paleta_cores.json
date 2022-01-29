@@ -1,6 +1,11 @@
 {
     "section":{
-        "roxo_escuro_pastel":"#7F50A5"
+        "roxo_escuro_pastel":"#7F50A5",
+        "cinza_escuro":"#201D20"
+    },
+    "background_componentes":{
+        "cinza_avermelhado":"#584B4F",
+        "roxo_claro":"#A25FBF"
     },
     "div_imagem":{
         "Roxo_escuro":"#54356E"
