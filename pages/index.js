@@ -11,7 +11,6 @@ export default function home_page() {
     useEffect(() => {
         set_imagem_usuario(`https://github.com/${login_usuario}.png`);
     }, [login_usuario]);
-    console.log(imagem_usuario.length)
     return (
         <>
             <Box
@@ -55,7 +54,7 @@ function Apresentacao_input(props) {
             <Box className='input'>
                 <form onSubmit={(evento) => {
                     evento.preventDefault()
-                    props.rota.push('/prox_page')
+                    props.rota.push(`/prox_page?usuario=${props.usuario}`)
                 }
                 }>
                     <TextField
@@ -63,7 +62,7 @@ function Apresentacao_input(props) {
                         onChange={(evento) => props.set_usuario(evento.target.value)}
                         styleSheet={{ backgroundColor: 'whitesmoke', color: paleta_cores.cor_inputs.roxo_escuro_pastel, border: `1px solid purple`, width: '70%', margin: 'auto' }}
                     />
-                    <input type='submit' value='Entrar' />
+                    <input type='submit' value='Entrar'/>
                     <style jsx>{`
                         input{
                             background:whitesmoke;

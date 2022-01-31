@@ -3,23 +3,35 @@ import { createClient} from "@supabase/supabase-js";
 import { useRouter } from "next/router";
 import { useState, useEffect } from "react";
 import paleta_cores from '../paleta_cores.json';
+import Botao_sticker from "../src/components/botao_sticker";
+
+const chave_anon = 'eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJyb2xlIjoiYW5vbiIsImlhdCI6MTY0MzQ4MTE0MywiZXhwIjoxOTU5MDU3MTQzfQ.g0aDLczyn3UMOO7pXIP51-OCcEUTGFg5vhwFHW2PfuI';
+const url = 'https://hdejpuyftsbathlcxmpz.supabase.co';
+const ligacao = createClient(url,chave_anon);
+
+function atualiza_page(muda_lista_msg){
+    return ligacao
+        .from('mensagens')
+        .on('INSERT',(resp)=>{
+            atualizar_mensagem(ligacao,muda_lista_msg);
+        });
+};
 export default function Prox_pagina(){
     const roteamento_index = useRouter()
     const [lista_mensagem, set_lista_mensagem] = useState([]);
     const [mensagem_txt, set_mensagem_txt] = useState('');
-    const chave_anon = 'eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJyb2xlIjoiYW5vbiIsImlhdCI6MTY0MzQ4MTE0MywiZXhwIjoxOTU5MDU3MTQzfQ.g0aDLczyn3UMOO7pXIP51-OCcEUTGFg5vhwFHW2PfuI';
-    const url = 'https://hdejpuyftsbathlcxmpz.supabase.co';
-    const ligacao = createClient(url,chave_anon);
+
     useEffect(()=>{
         atualizar_mensagem(ligacao,set_lista_mensagem);
-    },[lista_mensagem]);
+    },[]);
+
     return(
         <Box 
         as='section'
         styleSheet={{
             backgroundColor:`${paleta_cores.section.cinza_escuro}`,
             width:'70vw',
-            height:'80vh',
+            minheight:'80vh',
             padding:'10px',
             margin:'auto',
             marginTop:'50px',
@@ -38,53 +50,111 @@ export default function Prox_pagina(){
                     {lista_mensagem.map((infosMensagem)=>{
                         return (
                             <>
-                                <li key={infosMensagem.id}>
-                                    <p className='de'><img src={`https://github.com/${infosMensagem.de}.png`}/>{infosMensagem.de}</p>
-                                    <p className='text'>{infosMensagem.texto}</p>
-                                    <p className='data'>{infosMensagem.data}</p>
-                                </li>
-                                <style jsx>{`
-                                    li{
-                                        color:white;
-                                        text-shadow:1px 1px 2px black;
-                                        font-size:18px;
-                                        padding:10px;
-                                        border-radius:15px;
-                                        background:${paleta_cores.background_componentes.roxo_claro};
-                                        list-style:none;
-                                        width:20vw;
-                                        margin-bottom:10px;
-                                    }
-                                    li p img{
-                                        height:30px;
-                                        width:30px;
-                                        margin-right:5px;
-                                        border-radius:7px;
-                                    }
-                                    li p {
-                                        padding:5px;
-                                        margin:0;
-                                    }
-                                    p.de{
-                                        text-align:left;
-                                        width:60%;
-                                        border:1px solid white;
-                                        border-radius:10px;
-                                        display:flex;
-                                    }
-                                    p.text{
-                                        text-align:center;
-                                    }
-                                    p.data{
-                                        text-align:right;
-                                    }
-                                `}</style>
+                                {infosMensagem.texto.startsWith(':sticker:')
+                                ?(<>
+                                    <li key={infosMensagem.id}>
+                                            <p className='de'><img src={`https://github.com/${infosMensagem.de}.png`}/>{infosMensagem.de}</p>
+                                            <img className='text' src={infosMensagem.texto.replace(':sticker:','')}/>
+                                            <p className='data'>{infosMensagem.data}</p>
+                                        </li>
+                                        <style jsx>{`
+                                            li{
+                                                color:white;
+                                                text-shadow:1px 1px 2px black;
+                                                font-size:18px;
+                                                padding:10px;
+                                                border-radius:15px;
+                                                background:${paleta_cores.background_componentes.roxo_claro};
+                                                list-style:none;
+                                                min-Width:20vw;
+                                                max-Width:35vw;
+                                                margin-bottom:10px;
+                                            }
+                                            li img.text{
+                                                text-align:center;
+                                                padding:5px;
+                                                width:18vw;
+                                            }
+                                            li p img{
+                                                height:30px;
+                                                width:30px;
+                                                margin-right:5px;
+                                                border-radius:7px;
+                                            }
+                                            li p {
+                                                padding:5px;
+                                                margin:0;
+                                            }
+                                            p.de{
+                                                text-align:left;
+                                                max-width:32vw;
+                                                border:1px solid white;
+                                                border-radius:10px;
+                                                display:flex;
+                                            }
+                                            p.data{
+                                                text-align:right;
+                                            }
+                                        `}</style>
+                                    </>
+                                )
+                                :(
+                                    <>
+                                        <li key={infosMensagem.id}>
+                                            <p className='de'><img src={`https://github.com/${infosMensagem.de}.png`}/>{infosMensagem.de}</p>
+                                            <p className='text'>{infosMensagem.texto}</p>
+                                            <p className='data'>{infosMensagem.data}</p>
+                                        </li>
+                                        <style jsx>{`
+                                            li{
+                                                color:white;
+                                                text-shadow:1px 1px 2px black;
+                                                font-size:18px;
+                                                padding:10px;
+                                                border-radius:15px;
+                                                background:${paleta_cores.background_componentes.roxo_claro};
+                                                list-style:none;
+                                                width:20vw;
+                                                margin-bottom:10px;
+                                            }
+                                            li p img{
+                                                height:30px;
+                                                width:30px;
+                                                margin-right:5px;
+                                                border-radius:7px;
+                                            }
+                                            li p {
+                                                padding:5px;
+                                                margin:0;
+                                            }
+                                            p.de{
+                                                text-align:left;
+                                                width:60%;
+                                                border:1px solid white;
+                                                border-radius:10px;
+                                                display:flex;
+                                            }
+                                            p.text{
+                                                text-align:center;
+                                            }
+                                            p.data{
+                                                text-align:right;
+                                            }
+                                        `}</style>
+                                    </>
+                                )
+                                }
                             </>
                         );
                     })}
                 </Box>
             </Caixa_mensagem>
             <Caixa_inputs>
+                <Box styleSheet={{
+                    flexDirection:'column'
+                }}>
+                    <Botao_sticker onStickerClick={(sticker)=>{cria_mensagem(ligacao,sticker,set_lista_mensagem,roteamento_index.query.usuario)}}/>
+                </Box>
                 <TextField as='textarea'
                 value={mensagem_txt}
                 styleSheet={{
@@ -101,27 +171,30 @@ export default function Prox_pagina(){
                 onKeyPress={(evento)=>{
                     if(evento.key == 'Enter'){
                         evento.preventDefault()
-                        cria_mensagem(ligacao,mensagem_txt,set_lista_mensagem,lista_mensagem);
+                        cria_mensagem(ligacao,mensagem_txt,set_lista_mensagem,roteamento_index.query.usuario);
                         set_mensagem_txt('');
+                        atualiza_page(set_lista_mensagem);
                     }
                 }}
                 />
-                <Botao_enviar_mensagem ligacao_BD={ligacao} mensagem={mensagem_txt} muda_lista={set_lista_mensagem} lista={lista_mensagem}/>
+                <Botao_enviar_mensagem autor={roteamento_index.query.usuario} atualiza_page={atualiza_page} ligacao_BD={ligacao} muda_mensagem={set_mensagem_txt} mensagem={mensagem_txt} muda_lista={set_lista_mensagem} lista={lista_mensagem}/>
             </Caixa_inputs>
         </Box>
     );
 };
-function cria_mensagem(ligacao_BD,mensagem,muda_lista,lista){
+function cria_mensagem(ligacao_BD,mensagem,muda_lista,autor){
     const obj_msg = {
-        de:'ChristianDev123',
+        de:autor,
         texto:mensagem,
         data:'29/01/2022'
     };
     ligacao_BD
     .from('mensagens')
-    .insert([obj_msg]);
-    muda_lista([...lista,obj_msg]);
-};
+    .insert([obj_msg])
+    .then((retorno)=>{
+        atualizar_mensagem(ligacao_BD,muda_lista);
+    })
+}
 function Header_page(props){
     return(
         <>
@@ -237,7 +310,9 @@ function Botao_enviar_mensagem(props){
             }
         }}
             onClick={()=>{
-                cria_mensagem(props.ligacao_BD,props.mensagem,props.muda_lista,props.lista);
+                cria_mensagem(props.ligacao_BD,props.mensagem,props.muda_lista,props.autor);
+                props.muda_mensagem('');
+                props.atualiza_page(props.muda_lista);
             }}
         />
     );
